@@ -2,9 +2,9 @@
 
 ## What is it?
 
-CallerJS is a jQuery plugin and need it to work!
+callerJS is a jQuery plugin and need it to work!
 
-Use Caller JS to call ajax and functions when you need
+Use callerJS to call ajax and functions when you need
 
 ## Demo
 
