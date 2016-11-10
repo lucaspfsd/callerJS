@@ -17,14 +17,14 @@ The plugin callerJS use data attributes to configure your calls. See more in: ht
 
 The list of possible data attributes are:
 
-* data-call-ajax-method //string POST or GET methods of url call
+* data-call-cache //true or false, call url or function once
 * data-call-fn //string of function to call
-* data-call-immediate //true or false call url or function immediately
-* data-call-into //string of id or class of elemento do render the url call
-* data-call-once //true or false, call url or function once
-* data-call-trigger //string of event: click or mouseenter or focus
+* data-call-httpverb //string POST or GET methods of url call.
+* data-call-onevent //string of event: load or click or mouseenter or focus
+* data-call-fn-onerror //string of function to callback on error (url)
+* data-call-fn-onsuccess //string of function to callback on success (fn and url)
+* data-call-target //string of id or class of element to render the content of call
 * data-call-url //string of url to call by ajax
-* data-call-callback //string of function to callback
 
 ## Examples
 
@@ -43,19 +43,19 @@ The list of possible data attributes are:
 ### data-attributes
 
 ```
-<div id="demo-url" data-call-into="#demo-url" data-call-immediate="true" data-call-once="true" data-call-url="_partialDemoByUrl.html" class="panel-body">
+<div id="demo-url" data-call-target="#demo-url" data-call-trigger="load" data-call-cache="true" data-call-url="_partialDemoByUrl.html" class="panel-body">
 </div>
 ```
 
 ```
 <div class="panel-heading">
-  <h2 class="panel-title" data-call-into="#demo-trigger" data-call-once="true" data-call-trigger="mouseenter" data-call-url="_partialDemoByTrigger.html">Calling html by mouseenter! <small>mouseenter here.</small></h2>
+  <h2 class="panel-title" data-call-target="#demo-trigger" data-call-cache="true" data-call-trigger="mouseenter" data-call-url="_partialDemoByTrigger.html">Calling html by mouseenter! <small>mouseenter here.</small></h2>
 </div>
 <div id="demo-trigger" class="panel-body">
 </div>
 ```
 ```
-<div id="demo-fn" data-call-into="#demo-fn" data-call-immediate="true" data-call-once="true" data-call-fn="fnDemo()" class="panel-body">
+<div id="demo-fn" data-call-target="#demo-fn" data-call-trigger="hover" data-call-cache="true" data-call-fn="fnDemo()" class="panel-body">
 </div>
 ```
 ```javascript
