@@ -54,6 +54,10 @@ The list of possible data attributes are:
 <div id="demo-trigger" class="panel-body">
 </div>
 ```
+```
+<div id="demo-fn" data-call-into="#demo-fn" data-call-immediate="true" data-call-once="true" data-call-fn="fnDemo()" class="panel-body">
+</div>
+```
 ```javascript
 function fnDemo(){
   $('#demo-fn').load('_partialDemoByFn.html');
