@@ -1,127 +1,146 @@
 (function ($) {
-        var pluginCallerJs = {
-            attrAjaxMethod: "call-ajax-method", //POST or GET
-            attrFunction: "call-fn", //string
-            attrImmediate: "call-immediate", //true or false
-            attrInto: "call-into", //string
-            attrOnce: "call-once", //string
-            attrTrigger: "call-trigger", //click or hover or focus
-            attrUrl: "call-url", //string
-            attrCallback: "call-callback", //string
-            call: function (item, callback) {
-                var params = this.getParams(item);
+	var pluginCallerJs = {
+		attrCache: 'call-cache', //true or false, call url or function once
+		attrFunction: 'call-fn', //string of function to call
+		attrHttpVerb: 'call-httpverb', //string POST or GET methods of url call.
+		attrOnEvent: 'call-onevent', //string of event: load or click or mouseenter or focus
+		attrOnError: 'call-fn-onerror', //string of function to callback on error (url)
+		attrOnSuccess: 'call-fn-onsuccess', //string of function to callback on success (fn and url)
+		attrTarget: 'call-target', //string of id or class of element to render the content of call
+		attrUrl: 'call-url', //string of url to call by ajax
+		call: function (item, options, callback) {
+			this.defaults = $.extend({}, $.fn.callerJS.defaults, options);
 
-                if (params.once && /\</ig.test($(params.into).html())) {
-                    return item;
-                }
+			var params = this.getParams(item);
 
-                if (params.fn != null && params.fn != '')
-                {
-                    this.callFn(params, callback);
-                }
-                else if (params.url != null && params.url != '') {
-                    this.callUrl(params, callback);
-                }
+			if (params.cache && /\</ig.test($(params.target).html())) {
+				return item;
+			}
 
-                this.checkCallback(callback);
+			if (params.fn != null && params.fn != '')
+			{
+				this.callFn(params, callback);
+			}
+			else if (params.url != null && params.url != '') {
 
-                return item;
-            },
-            callFn: function (params, callback) {
-                var targetFn = new Function(params.fn);
-                var cb = callback == null ? params.callback : callback;
+				params.target = params.target != null ? params.target : item;
 
-                this.formatLoader(params.into);
+				this.callUrl(params, callback);
+			}
 
-                targetFn.call();
+			return item;
+		},
+		callFn: function (params, callback) {
+			var targetFn = new Function(params.fn);
+			var callbackSuccess = callback == null ? params.eventOnSuccess : callback;
 
-                this.checkCallback(cb);
-            },
-            callImmediate: function () {
-                var self = this;
+			this.formatLoader(params.into);
 
-                $('[data-' + self.attrImmediate + ']').each(function (index, item) {
-                    self.call(item);
-                });
-            },
-            callUrl: function (params, callback) {
-                var self = this;
-                self.formatLoader(params.into);
-                var method = params.ajaxMethod == 'post' ? 'POST' : 'GET';
-                var cb = callback == null ? params.callback : callback;
+			targetFn.call();
 
-                $.ajax({
-                    method: method,
-                    url: params.url
-                }).done(content => {
-                    $(params.into).html(content);
-                }).
-                always(() => {
-                    self.checkCallback(cb);
-                });
-            },
-            checkCallback: function (callback) {
-                if (callback) {
-                    if (typeof callback === 'string') {
-                        const index = (x, i) => x[i];
-                        const f = callback.split('.').reduce(index, window);
-                        f();
-                    }
-                    else
-                        callback();
-                }
-            },
-            defaults: {
-                loaderTemplate: '<div class="preloader"><span class="loader [[DEFAULT_SIZE]]"></span><p>[[DEFAULT_MSG]]<p></div>',
-                defaultLoaderSize: "loader-2x",
-                defaultLoaderMessage: "Loading...",
-                delay: "quite long"
-            },
-            formatLoader: function (target) {
-                var htmlLoader = this.defaults.loaderTemplate.replace('[[DEFAULT_MSG]]', this.defaults.defaultLoaderMessage).replace('[[DEFAULT_SIZE]]', this.defaults.defaultLoaderSize);
-                $(target).html(htmlLoader);
-            },
-            getParams: function (element) {
-                var item = $(element);
-                return {
-                    ajaxMethod: item.data(this.attrAjaxMethod),
-                    fn: item.data(this.attrFunction),
-                    immediate: item.data(this.attrImmediate),
-                    into: item.data(this.attrInto),
-                    once: item.data(this.attrOnce),
-                    trigger: item.data(this.attrTrigger),
-                    url: item.data(this.attrUrl),
-                    callback: item.data(this.attrCallback)
-                };
-            },
-            init : function(item, options) {
-                this.defaults = $.extend({}, $.fn.callerJS.defaults, options);
+			this.checkCallback(callbackSuccess);
+		},
+		callImmediate: function () {
+			var self = this;
 
-                this.callImmediate();
+			$('[data-' + self.attrOnEvent + '="load"]').each(function (index, item) {
+				self.call(item);
+			});
+		},
+		callUrl: function (params, callback) {
+			var self = this;
+			self.formatLoader(params.target);
 
-                this.setCallOnEvent();
-            },
-            setCallOnEvent: function () {
-                var self = this;
+			var method = params.httpverb == 'post' ? 'POST' : 'GET';
+			var callbackSuccess = callback == null ? params.eventOnSuccess : callback;
+			var callbackError = callback == null ? params.eventOnError : callback;
+			
+			$.ajax({
+				method: method,
+				url: params.url
+			}).done(content => {
+				$(params.target).html(content);
+				self.checkCallback(callbackSuccess);
+			}).fail(() => {
+				self.checkCallback(callbackError);
+			});
+		},
+		checkCallback: function (callback) {
+			if (callback) {
+				if (typeof callback === 'string') {
+					const index = (x, i) => x[i];
+					const f = callback.split('.').reduce(index, window);
+					f();
+				}
+				else
+					callback();
+			}
+		},
+		defaults: {
+			loaderTemplate: '<div class="preloader"><span class="loader [[DEFAULT_SIZE]]"></span><p>[[DEFAULT_MSG]]<p></div>',
+			defaultLoaderSize: 'loader-2x',
+			defaultLoaderMessage: 'Loading...'
+		},
+		formatLoader: function (target) {
+			var htmlLoader = this.defaults.loaderTemplate.replace('[[DEFAULT_MSG]]', this.defaults.defaultLoaderMessage).replace('[[DEFAULT_SIZE]]', this.defaults.defaultLoaderSize);
+			$(target).html(htmlLoader);
+		},
+		getParams: function (element) {
+			var item = $(element);
+			return {
+				cache: item.data(this.attrCache),
+				eventOnError: item.data(this.attrOnError),
+				eventOnSuccess: item.data(this.attrOnSuccess),
+				fn: item.data(this.attrFunction),
+				httpverb: item.data(this.attrHttpVerb),
+				onevent: item.data(this.attrOnEvent),
+				target: item.data(this.attrTarget),
+				url: item.data(this.attrUrl),
+			};
+		},
+		init : function(item, options) {
+			this.defaults = $.extend({}, $.fn.callerJS.defaults, options);
 
-                $('[data-' + self.attrTrigger + ']').each(function (index, item) {
-                    $(item).on($(item).data(self.attrTrigger), function () { self.call(item) });
-                });
-            },
-        };
+			this.callImmediate();
 
-        $.fn.callerJS = function (methodOrOptions, callback) {
-            return this.each(function() {
-                if (methodOrOptions === 'call') {
-                    return pluginCallerJs[methodOrOptions].apply(this, callback);
-                } else if ( typeof methodOrOptions === 'object' || !methodOrOptions ) {
-                    // Default to "init"
-                    return pluginCallerJs.init(this, arguments[2]);
-                } else {
-                    $.error('Method ' +  methodOrOptions + ' does not exist on jQuery.callerJS');
-                }
-            });
-        };
+			this.setCallOnEvent();
+		},
+		setCallOnEvent: function () {
+			var self = this;
 
-        $.fn.callerJS.defaults = pluginCallerJs.defaults;
-    }(jQuery));
+			$('[data-' + self.attrOnEvent + '!="load"]').each(function (index, item) {
+				$(item).on($(item).data(self.attrOnEvent), function () { self.call(item) });
+			});
+		},
+	};
+
+	$.fn.callerJS = function () {
+		var defaults = null;
+		var callback = null;
+		var method = arguments[0];
+
+		if (typeof arguments[0] === 'object')
+		{
+			defaults = arguments[0];
+		}
+		else if (typeof arguments[1] === 'object')
+		{
+			defaults = arguments[1];
+		}
+
+		callback = defaults === null ? arguments[1] : arguments[2];
+
+		return this.each(function() {
+			if (method === 'call') {
+				return pluginCallerJs.call(this, defaults, callback);
+			} else if (typeof method === 'object' || !method) {
+				// Default to 'init'
+				return pluginCallerJs.init(this, defaults);
+			} else {
+				$.error('Method ' +  methodOrOptions + ' does not exist on jQuery.callerJS');
+			}
+		});
+	};
+
+	$.fn.callerJS.defaults = pluginCallerJs.defaults;
+}(jQuery));
