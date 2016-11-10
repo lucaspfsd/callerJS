@@ -8,12 +8,12 @@ Use Caller JS to call ajax and functions when you need
 
 ## Demo
 
-See the Live Demo: [http://code.pro.br/callerJSRepo/]
+See the Live Demo: http://code.pro.br/callerJSRepo/
 
 ## Introduction
 
 With callerJS you can call by ajax and function your html partials when you want. You can call immediately or call by a trigger event.
-The plugin callerJS use data attributes to configure your calls. See more in: [https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Using_data_attributes]
+The plugin callerJS use data attributes to configure your calls. See more in: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Using_data_attributes
 
 The list of possible data attributes are:
 
