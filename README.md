@@ -32,13 +32,13 @@ The list of possible data attributes are:
 
 ```javascript
     $('.container').callerJS(); //init callerJS
-```javascript
+```
 
 ### Call callerJS after init
 
 ```javascript
     $('.container').callerJS('call'); //call after init callerJS
-```javascript
+```
 
 ### data-attributes
 
@@ -58,4 +58,4 @@ The list of possible data attributes are:
 function fnDemo(){
   $('#demo-fn').load('_partialDemoByFn.html');
 }
-```javascript
+```
