@@ -1,0 +1,54 @@
+<html>
+	<head>
+		<title>
+			Caller JS | DEMO
+		</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	</head>
+	<body>
+		<div class="container main">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div class="page-header">
+						<h1>
+							Caller JS DEMO
+						<h1>
+					</div>
+					<div class="panel panel-info">
+						<div class="panel-heading">
+							<h2 class="panel-title">Calling html by url!</h2>
+						</div>
+						<div id="demo-url" data-call-into="#demo-url" data-call-immediate="true" data-call-once="true" data-call-url="_partialDemoByUrl.html" class="panel-body">
+						</div>
+					</div>
+					<div class="panel panel-info">
+						<div class="panel-heading">
+							<h2 class="panel-title">Calling html by fn!</h2>
+						</div>
+						<div id="demo-fn" data-call-into="#demo-fn" data-call-immediate="true" data-call-once="true" data-call-fn="fnDemo()" class="panel-body">
+						</div>
+					</div>
+					<div class="panel panel-info">
+						<div class="panel-heading">
+							<h2 class="panel-title" data-call-into="#demo-trigger" data-call-once="true" data-call-trigger="mouseenter" data-call-url="_partialDemoByTrigger.html">Calling html by mouseenter! <small>mouseenter here.</small></h2>
+						</div>
+						<div id="demo-trigger" class="panel-body">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script src="js/caller.js" ></script>
+		<script>
+			$(function(){
+				$('.container').callerJS();
+			});
+			
+			function fnDemo(){
+				$('#demo-fn').load('_partialDemoByFn.html');
+			}
+		</script>
+	</body>
+</html>
