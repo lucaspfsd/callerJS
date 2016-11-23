@@ -43,19 +43,19 @@ The list of possible data attributes are:
 ### data-attributes
 
 ```
-<div id="demo-url" data-call-target="#demo-url" data-call-trigger="load" data-call-cache="true" data-call-url="_partialDemoByUrl.html" class="panel-body">
+<div id="demo-url" data-call-target="#demo-url" data-call-onevent="load" data-call-cache="true" data-call-url="_partialDemoByUrl.html" class="panel-body">
 </div>
 ```
 
 ```
 <div class="panel-heading">
-  <h2 class="panel-title" data-call-target="#demo-trigger" data-call-cache="true" data-call-trigger="mouseenter" data-call-url="_partialDemoByTrigger.html">Calling html by mouseenter! <small>mouseenter here.</small></h2>
+  <h2 class="panel-title" data-call-target="#demo-trigger" data-call-cache="true" data-call-onevent="mouseenter" data-call-url="_partialDemoByTrigger.html">Calling html by mouseenter! <small>mouseenter here.</small></h2>
 </div>
 <div id="demo-trigger" class="panel-body">
 </div>
 ```
 ```
-<div id="demo-fn" data-call-target="#demo-fn" data-call-trigger="hover" data-call-cache="true" data-call-fn="fnDemo()" class="panel-body">
+<div id="demo-fn" data-call-target="#demo-fn" data-call-onevent="hover" data-call-cache="true" data-call-fn="fnDemo()" class="panel-body">
 </div>
 ```
 ```javascript
