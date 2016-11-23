@@ -108,7 +108,7 @@
 		setCallOnEvent: function () {
 			var self = this;
 
-			$('[data-' + self.attrOnEvent + '!="load"]').each(function (index, item) {
+			$('[data-' + self.attrOnEvent + ']').not('[data-' + self.attrOnEvent + '="load"]').each(function (index, item) {
 				$(item).on($(item).data(self.attrOnEvent), function () { self.call(item) });
 			});
 		},
