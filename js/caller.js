@@ -1,4 +1,17 @@
 (function ($) {
+
+	function getFunction(code, argNames) {
+		var fn = window, parts = (code || "").split(".");
+		while (fn && parts.length) {
+			fn = fn[parts.shift()];
+		}
+		if (typeof (fn) === "function") {
+			return fn;
+		}
+		argNames.push(code);
+		return Function.constructor.apply(null, argNames);
+	}
+
 	var pluginCallerJs = {
 		attrCache: 'call-cache', //true or false, call url or function once
 		attrFunction: 'call-fn', //string of function to call
@@ -17,20 +30,19 @@
 				return item;
 			}
 
-			if (params.fn != null && params.fn != '')
-			{
-				this.callFn(params, callback);
+			if (params.fn != null && params.fn != '') {
+				this.callFn(item, params, callback);
 			}
 			else if (params.url != null && params.url != '') {
 
 				params.target = params.target != null ? params.target : item;
 
-				this.callUrl(params, callback);
+				this.callUrl(item, params, callback);
 			}
 
 			return item;
 		},
-		callFn: function (params, callback) {
+		callFn: function (item, params, callback) {
 			var targetFn = new Function(params.fn);
 			var callbackSuccess = callback == null ? params.eventOnSuccess : callback;
 
@@ -38,7 +50,7 @@
 
 			targetFn.call();
 
-			this.checkCallback(callbackSuccess);
+			this.checkCallback(item, callbackSuccess);
 		},
 		callImmediate: function () {
 			var self = this;
@@ -47,37 +59,35 @@
 				self.call(item);
 			});
 		},
-		callUrl: function (params, callback) {
+		callUrl: function (item, params, callback) {
 			var self = this;
 			self.formatLoader(params.target);
 
 			var method = params.httpverb == 'post' ? 'POST' : 'GET';
 			var callbackSuccess = callback == null ? params.eventOnSuccess : callback;
 			var callbackError = callback == null ? params.eventOnError : callback;
-			
+
 			$.ajax({
 				method: method,
 				url: params.url
 			}).done(content => {
 				$(params.target).html(content);
-				self.checkCallback(callbackSuccess);
+				self.checkCallback(item, callbackSuccess);
 			}).fail(() => {
-				self.checkCallback(callbackError);
+				self.checkCallback(item, callbackError);
 			});
 		},
-		checkCallback: function (callback) {
+		checkCallback: function (item, callback) {
 			if (callback) {
 				if (typeof callback === 'string') {
-					const index = (x, i) => x[i];
-					const f = callback.split('.').reduce(index, window);
-					f();
+					getFunction(callback, ["xhr", "status"]).apply(item, arguments);
 				}
 				else
 					callback();
 			}
 		},
 		defaults: {
-			loaderTemplate: '<div class="preloader"><span class="loader [[DEFAULT_SIZE]]"></span><p>[[DEFAULT_MSG]]<p></div>',
+			loaderTemplate: '<div class="preloader text-xs-center align-middle h-100 w-100"><span class="loader-umbler [[DEFAULT_SIZE]]"></span><p>[[DEFAULT_MSG]]<p></div>',
 			defaultLoaderSize: 'loader-2x',
 			defaultLoaderMessage: 'Loading...'
 		},
@@ -98,7 +108,7 @@
 				url: item.data(this.attrUrl),
 			};
 		},
-		init : function(item, options) {
+		init: function (item, options) {
 			this.defaults = $.extend({}, $.fn.callerJS.defaults, options);
 
 			this.callImmediate();
@@ -119,28 +129,26 @@
 		var callback = null;
 		var method = arguments[0];
 
-		if (typeof arguments[0] === 'object')
-		{
+		if (typeof arguments[0] === 'object') {
 			defaults = arguments[0];
 		}
-		else if (typeof arguments[1] === 'object')
-		{
+		else if (typeof arguments[1] === 'object') {
 			defaults = arguments[1];
 		}
 
 		callback = defaults === null ? arguments[1] : arguments[2];
 
-		return this.each(function() {
+		return this.each(function () {
 			if (method === 'call') {
 				return pluginCallerJs.call(this, defaults, callback);
 			} else if (typeof method === 'object' || !method) {
 				// Default to 'init'
 				return pluginCallerJs.init(this, defaults);
 			} else {
-				$.error('Method ' +  methodOrOptions + ' does not exist on jQuery.callerJS');
+				$.error('Method ' + methodOrOptions + ' does not exist on jQuery.callerJS');
 			}
 		});
 	};
 
 	$.fn.callerJS.defaults = pluginCallerJs.defaults;
-}(jQuery));
+} (jQuery));
